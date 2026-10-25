@@ -126,7 +126,8 @@ export function createUI(root, { data, onAction = () => {}, state: initialState 
     el.fuel.classList.toggle('ml-low', fuelRatio <= 0.25);
     el.hull.classList.toggle('ml-low', hullRatio <= 0.25);
     el.cargo.classList.toggle('ml-full', used >= stats.cargoMax);
-    el.depth.textContent = `Tiefe: ${fmt.depth(state.depth)}`;
+    // depthDisplay setzt die Engine für den Höhenmesser-Effekt des Originals (z.B. "-5?1?").
+    el.depth.textContent = `Tiefe: ${state.depthDisplay != null ? `${state.depthDisplay} ft` : fmt.depth(state.depth)}`;
     el.money.textContent = fmt.money(state.money);
 
     const warnings = [];

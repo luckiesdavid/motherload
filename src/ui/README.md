@@ -67,6 +67,7 @@ Gehört der Engine. Die UI verändert ihn nur über `transactions.js`:
   cargo: { [mineralId]: anzahl },  // Fundstücke zahlen sofort aus und landen nicht hier
   items: { [itemId]: anzahl },
   seenStory: [/* Indizes in data.story */],
+  depthDisplay, // optional, von der Engine: ersetzt die Tiefenanzeige im HUD (z.B. "-5?1?")
 }
 ```
 
