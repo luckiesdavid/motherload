@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motherload Sprites</title>
+<style>
+  body { background: #22242c; color: #ddd; font: 14px monospace; margin: 16px; }
+  h2 { color: #ffe14a; margin: 24px 0 8px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 12px; }
+  figure { margin: 0; text-align: center; }
+  canvas { image-rendering: pixelated; background: #3a3d48; display: block; margin: 0 auto 4px; }
+  figcaption { font-size: 11px; color: #aaa; }
+  #world { background: none; }
+</style>
+</head>
+<body>
+<h1>Motherload Sprite-Vorschau</h1>
+<p>Animierte Sprites laufen in Schleife. Unten eine kleine Beispielszene.</p>
+<div id="groups"></div>
+<h2>Beispielszene</h2>
+<canvas id="world" width="640" height="480"></canvas>
+<script src="sprites.js"></script>
+<script>
+  var M = MotherloadSprites, SCALE = 3, anims = [];
+  var groups = { tile: "Tiles", pod: "Pod", fx: "Effekte", icon: "Icons", building: "Gebaeude", bg: "Hintergrund" };
+  M.loadSprites("").then(function () {
+    var root = document.getElementById("groups");
+    Object.keys(groups).forEach(function (prefix) {
+      var h = document.createElement("h2"); h.textContent = groups[prefix]; root.appendChild(h);
+      var grid = document.createElement("div"); grid.className = "grid"; root.appendChild(grid);
+      Object.keys(M.SPRITES).sort().filter(function (n) { return n.indexOf(prefix + "_") === 0; })
+        .forEach(function (name) {
+          var s = M.SPRITES[name], sc = name === "bg_sky" ? 1 : SCALE;
+          var fig = document.createElement("figure"), c = document.createElement("canvas");
+          c.width = s.w * sc; c.height = s.h * sc;
+          var cap = document.createElement("figcaption");
+          cap.textContent = name + (s.frames > 1 ? " (" + s.frames + " Frames)" : "");
+          fig.appendChild(c); fig.appendChild(cap); grid.appendChild(fig);
+          anims.push({ ctx: c.getContext("2d"), name: name, sc: sc, s: s });
+        });
+    });
+    var t = 0;
+    setInterval(function () {
+      t++;
+      anims.forEach(function (a) {
+        a.ctx.clearRect(0, 0, a.s.w * a.sc, a.s.h * a.sc);
+        M.drawSprite(a.ctx, a.name, t, 0, 0, false, a.sc);
+      });
+      drawWorld(t);
+    }, 160);
+  });
+
+  function drawWorld(t) {
+    var ctx = document.getElementById("world").getContext("2d"), T = 32;
+    M.drawSprite(ctx, "bg_sky", 0, 0, 0);
+    M.drawSprite(ctx, "building_fuel", 0, 16, 224 - 96);
+    M.drawSprite(ctx, "building_mineral", 0, 176, 224 - 96);
+    M.drawSprite(ctx, "building_upgrade", 0, 336, 224 - 96);
+    M.drawSprite(ctx, "building_repair", 0, 496, 224 - 96);
+    var ores = ["ironium", "bronzium", "silverium", "goldium", "platinum", "einsteinium",
+                "emerald", "ruby", "diamond", "amazonite"];
+    for (var y = 7; y < 15; y++) {
+      for (var x = 0; x < 20; x++) {
+        var h = (x * 7 + y * 13) % 23, name;
+        if (y === 7) name = "tile_grass";
+        else if (x === 9 && y < 12) name = "tile_tunnel";
+        else if (h === 3) name = "tile_ore_" + ores[(x + y) % ores.length];
+        else if (h === 5 && y > 10) name = "tile_lava";
+        else if (h === 7) name = "tile_rock";
+        else if (h === 11 && y > 11) name = "tile_artifact_treasure";
+        else name = (y > 11 ? "tile_dirt_deep_" : "tile_dirt_") + ((x + y) % 4);
+        M.drawSprite(ctx, name, t, x * T, y * T);
+      }
+    }
+    M.drawSprite(ctx, "pod_drill_down", t, 9 * T, 11 * T);
+    M.drawSprite(ctx, "fx_dust", t, 9 * T, 12 * T);
+    M.drawSprite(ctx, "pod_fly", t, 5 * T, 5 * T, true);
+  }
+</script>
+</body>
+</html>
