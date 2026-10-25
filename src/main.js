@@ -37,6 +37,7 @@ const input = createInput(root, (word) => { if (mode === 'play') game.cheat(word
 const ui = createUI(document.getElementById('ui'), {
   data,
   hasSave: () => Game.hasSave(),
+  saveInfo: () => Game.saveInfo(),
   onAction,
 });
 
@@ -51,8 +52,7 @@ function onAction(type, payload = {}) {
       else { ui.showScreen('title', { hasSave: false }); ui.toast('Kein Spielstand gefunden'); }
       break;
     case 'save':
-      if (!game.save()) ui.toast('Speichern nicht möglich: der Browser blockiert den Speicher');
-      break;
+      return game.save();
     case 'quit':
       mode = 'title';
       GameAudio.stopAllLoops();
@@ -96,6 +96,13 @@ ui.showScreen('title', { hasSave: Game.hasSave() });
 
 // Für Konsole und Tests.
 window.motherload = { game, ui, renderer };
+
+// Beim Schließen oder Wegwechseln des Tabs automatisch sichern, wenn es gefahrlos geht.
+function autosave() {
+  if (mode === 'play') game.save();
+}
+window.addEventListener('pagehide', autosave);
+document.addEventListener('visibilitychange', () => { if (document.hidden) autosave(); });
 
 let last = performance.now();
 function frame(now) {

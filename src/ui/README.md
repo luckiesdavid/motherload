@@ -21,6 +21,7 @@ import * as data from './data/index.js';
 const ui = createUI(document.getElementById('ui'), {
   data,                       // Sammel-Export aus src/data/index.js
   hasSave: () => engine.hasSave(),
+  saveInfo: () => engine.saveInfo(), // { depth, money, savedAt } oder null, für „Weiterspielen“
   onAction: (type, payload) => { /* siehe unten */ },
 });
 
@@ -48,7 +49,7 @@ if (ui.isBlocking()) { /* Physik und Steuerung pausieren */ }
 | --- | --- | --- |
 | `newGame` | `{ state }` frisch aus `createState(data)` | Engine baut Welt, übernimmt oder ersetzt den State |
 | `load` | `{}` | Engine lädt Spielstand und reicht ihn per `update()` weiter |
-| `save` | `{}` | Engine speichert Welt und State |
+| `save` | `{}` | Engine speichert Welt und State; Rückgabe `null` oder ein Grund als Text, warum nicht |
 | `pause` / `resume` / `quit` | `{}` | Engine pausiert bzw. kehrt zum Titel zurück |
 | `useItem` | `{ id, item, engineEffect }` | bei `engineEffect: true` (Sprengstoff, Teleporter) führt die Engine den Effekt aus; Reservetank und Nanobots sind schon verrechnet |
 | `purchase` | `{ kind: 'fuel'|'sell'|'upgrade'|'repair'|'item', ... }` | optional, z.B. für Sounds |

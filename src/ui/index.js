@@ -55,7 +55,7 @@ const MINERAL_COLORS = {
 const DEFAULT_FUEL_BUTTONS = [5, 10, 25, 50, 'fill'];
 const DEFAULT_REPAIR_BUTTONS = [50, 100, 200, 500, 'full'];
 
-export function createUI(root, { data, onAction = () => {}, state: initialState = null, hasSave = () => false } = {}) {
+export function createUI(root, { data, onAction = () => {}, state: initialState = null, hasSave = () => false, saveInfo = () => null } = {}) {
   if (!data?.upgrades || !data?.minerals) throw new Error('createUI: data aus src/data/index.js fehlt');
   let state = initialState;
   let menu = null; // { kind }
@@ -307,16 +307,24 @@ export function createUI(root, { data, onAction = () => {}, state: initialState 
       el.quickbar.hidden = !state;
       return;
     }
-    const load = `<button class="ml-btn" data-action="load" ${saveAvailable() ? '' : 'disabled'}>Spiel laden</button>`;
+    const load = `<button class="ml-btn" data-action="load" ${saveAvailable() ? '' : 'disabled'}>Letzten Spielstand laden</button>`;
     let html = '';
     if (screen.kind === 'title') {
+      const info = saveAvailable() ? saveInfo() : null;
+      const buttons = screen.confirmNew
+        ? `<p class="ml-hint">Ein neues Spiel überschreibt deinen Spielstand beim nächsten Speichern.</p>
+          <button class="ml-btn ml-primary" data-action="newGame">Ja, neu anfangen</button>
+          <button class="ml-btn" data-action="cancelNew">Abbrechen</button>`
+        : info
+          ? `<button class="ml-btn ml-primary" data-action="load">Weiterspielen</button>
+            <p class="ml-save-info">${saveInfoText(info)}</p>
+            <button class="ml-btn" data-action="confirmNew">Neues Spiel</button>
+            <button class="ml-btn" data-action="howto">Anleitung</button>`
+          : `<button class="ml-btn ml-primary" data-action="newGame">Neues Spiel</button>
+            <button class="ml-btn" data-action="howto">Anleitung</button>`;
       html = `<div class="ml-screen ml-title">
         <h1>MOTHERLOAD</h1><p class="ml-sub">Mars Mining Corporation</p>
-        <div class="ml-col">
-          <button class="ml-btn ml-primary" data-action="newGame">Neues Spiel</button>
-          ${load}
-          <button class="ml-btn" data-action="howto">Anleitung</button>
-        </div>
+        <div class="ml-col">${buttons}</div>
         ${screen.howto ? howtoHtml() : ''}
       </div>`;
     } else if (screen.kind === 'pause') {
@@ -324,10 +332,11 @@ export function createUI(root, { data, onAction = () => {}, state: initialState 
         <h1>PAUSE</h1>
         <div class="ml-col">
           <button class="ml-btn ml-primary" data-action="resume">Weiter</button>
+          <button class="ml-btn" data-action="save">Spiel speichern</button>
           ${load}
           <button class="ml-btn" data-action="quit">Hauptmenü</button>
         </div>
-        <p class="ml-hint">Speichern geht an der Speicherstation an der Oberfläche.</p>
+        <p class="ml-hint">Das Spiel speichert automatisch, wenn du ein Gebäude verlässt oder den Tab schließt.</p>
       </div>`;
     } else if (screen.kind === 'gameover') {
       const reason = screen.info?.reason ?? 'Dein Pod wurde zerstört.';
@@ -351,6 +360,12 @@ export function createUI(root, { data, onAction = () => {}, state: initialState 
     el.screen.hidden = false;
     el.hud.hidden = screen.kind === 'title' || !state;
     el.quickbar.hidden = el.hud.hidden;
+  }
+
+  function saveInfoText(info) {
+    const parts = [`Tiefe ${fmt.depth(info.depth)}`, fmt.money(info.money)];
+    if (info.savedAt) parts.push(`gespeichert ${fmt.date(info.savedAt)}`);
+    return 'Spielstand: ' + parts.map(fmt.esc).join(' · ');
   }
 
   function howtoHtml() {
@@ -432,8 +447,17 @@ export function createUI(root, { data, onAction = () => {}, state: initialState 
       onAction('messageClosed', { message: msg });
     },
     save: () => {
-      onAction('save', {});
-      toast('Spiel gespeichert');
+      const problem = onAction('save', {});
+      toast(problem ? `Nicht gespeichert: ${problem}` : 'Spiel gespeichert');
+      if (screen) renderScreen();
+    },
+    confirmNew: () => {
+      screen = { ...screen, confirmNew: true, howto: false };
+      renderScreen();
+    },
+    cancelNew: () => {
+      screen = { ...screen, confirmNew: false };
+      renderScreen();
     },
     load: () => {
       leaveScreens();

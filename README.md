@@ -36,4 +36,11 @@ Auf Touch-Geräten erscheint ein Steuerkreuz. Fahr auf ein Gebäude, um es zu be
 | `src/audio/` | Prozedurale Sounds und Musik (Web Audio) |
 | `assets/graphics/` | Pixel-Art-Sprites (32x32 pro Feld) |
 
-Der Spielstand liegt im `localStorage` des Browsers (Autosave beim Verlassen eines Gebäudes und an der Speicherstation).
+## Spielstand
+
+Der Spielstand liegt im `localStorage` des Browsers, also pro Browser und Gerät. Gespeichert wird:
+
+- automatisch beim Verlassen eines Gebäudes und beim Schließen oder Wechseln des Tabs,
+- von Hand an der Speicherstation oder im Pausenmenü (Esc / P).
+
+Nicht gespeichert wird mit fast leerem Tank, kaputter Hülle oder im Endkampf, damit man nicht in einem ausweglosen Spielstand landet. Auf dem Startbildschirm geht es mit „Weiterspielen“ dort weiter.
