@@ -11,7 +11,7 @@ import { createMusic } from './music.js';
 
 const STORAGE_KEY = 'motherload.audio';
 const FUEL_BEEP_INTERVAL = 1.4;
-const DEFAULT_MAX_DEPTH = 1500;
+const DEFAULT_MAX_DEPTH_FT = 6000;
 
 const settings = loadSettings();
 let ready = false;
@@ -153,10 +153,10 @@ export const GameAudio = {
     if (music) music.stop();
   },
 
-  // Aktuelle Tiefe in Spieleinheiten (z.B. Meter oder Fuß). max ist die
-  // Tiefe, ab der die Musik am düstersten ist.
-  setDepth(depth, max = DEFAULT_MAX_DEPTH) {
-    depthTarget = clamp(depth / max, 0, 1);
+  // Aktuelle Tiefe in Fuß, wie im Spiel angezeigt. maxFt ist die Tiefe,
+  // ab der die Musik am düstersten ist.
+  setDepth(depthFt, maxFt = DEFAULT_MAX_DEPTH_FT) {
+    depthTarget = clamp(depthFt / maxFt, 0, 1);
     if (music) music.setDepth(depthTarget);
   },
 

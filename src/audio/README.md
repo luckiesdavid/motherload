@@ -51,7 +51,7 @@ GameAudio.stopAllLoops();                     // bei Pause, Shop oder Game Over
 
 ```js
 GameAudio.startMusic('surface');  // oder 'underground'
-GameAudio.setDepth(depthInMeters, 1500); // 2. Parameter: Tiefe, ab der es am düstersten ist
+GameAudio.setDepth(depthFt);        // Tiefe in Fuß; optional 2. Parameter maxFt (Standard 6000), ab da am düstersten
 GameAudio.stopMusic();
 ```
 
@@ -60,14 +60,14 @@ Die Musik ist eine eigene, prozedural sequenzierte Komposition in a-Moll. An der
 ## Lautstärke und Mute
 
 ```js
-GameAudio.toggleMute();   // gibt neuen Zustand zurück, empfohlen auf Taste M
+GameAudio.toggleMute();   // gibt neuen Zustand zurück, z.B. für einen Mute-Button im UI
 GameAudio.setMuted(true);
 GameAudio.isMuted();
 GameAudio.setSfxVolume(0.8);   // 0..1
 GameAudio.setMusicVolume(0.45);
 ```
 
-Mute und Lautstärken werden in `localStorage` unter `motherload.audio` gespeichert. Ist der Tab im Hintergrund, wird der AudioContext pausiert.
+Das Modul belegt selbst keine Tasten (M ist im Spiel der Materie-Transmitter). Mute und Lautstärken werden in `localStorage` unter `motherload.audio` gespeichert. Ist der Tab im Hintergrund, wird der AudioContext pausiert.
 
 ## Beispiel im Game-Loop
 
@@ -76,7 +76,7 @@ function update(dt) {
   GameAudio.setDrilling(player.isDrilling, tileHardness(player.drillTarget));
   GameAudio.setThrust(input.up && player.fuel > 0);
   GameAudio.setFuelLow(player.fuel / player.fuelMax < 0.2);
-  GameAudio.setDepth(player.depthMeters);
+  GameAudio.setDepth(player.depthFt);
 }
 
 events.on('ore', (ore) => GameAudio.play('ore', { value: ore.price / 100000 }));
