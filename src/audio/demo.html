@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motherload Audio-Test</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #1b1209; color: #f3e2c4; margin: 0; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p { color: #c8a97a; margin: 0 0 16px; }
+  section { margin-bottom: 20px; }
+  button { background: #6b3f17; color: #fff3dc; border: 1px solid #a66a2c; border-radius: 6px; padding: 8px 12px; margin: 0 6px 6px 0; font-size: 14px; cursor: pointer; }
+  button:hover { background: #87501e; }
+  button.on { background: #c9771f; }
+  label { display: inline-flex; gap: 8px; align-items: center; margin-right: 16px; }
+</style>
+</head>
+<body>
+<h1>Motherload Audio-Test</h1>
+<p>Alle Klänge sind prozedural erzeugt. Halten: Leertaste = Bohren, Pfeil hoch = Triebwerk.</p>
+
+<section id="sfx"></section>
+
+<section>
+  <button data-loop="drill">Bohren</button>
+  <button data-loop="thrust">Triebwerk</button>
+  <button data-loop="fuel">Treibstoff-Warnung</button>
+  <label>Härte <input id="hardness" type="range" min="0" max="1" step="0.05" value="0.5"></label>
+</section>
+
+<section>
+  <button id="music">Musik starten</button>
+  <label>Tiefe <input id="depth" type="range" min="0" max="6000" step="50" value="0"> <span id="depthVal">0 ft</span></label>
+  <button id="mute">Mute</button>
+</section>
+
+<script type="module">
+  import { GameAudio } from './index.js';
+
+  const sfx = document.getElementById('sfx');
+  for (const name of GameAudio.sounds) {
+    const b = document.createElement('button');
+    b.textContent = name;
+    b.onclick = () => GameAudio.play(name, { value: Math.random(), intensity: Math.random(), count: 8 });
+    sfx.append(b);
+  }
+
+  const hardness = document.getElementById('hardness');
+  const state = { drill: false, thrust: false, fuel: false };
+  function apply() {
+    GameAudio.setDrilling(state.drill, Number(hardness.value));
+    GameAudio.setThrust(state.thrust);
+    GameAudio.setFuelLow(state.fuel);
+    document.querySelectorAll('[data-loop]').forEach((b) => b.classList.toggle('on', state[b.dataset.loop]));
+  }
+  document.querySelectorAll('[data-loop]').forEach((b) => {
+    b.onclick = () => { state[b.dataset.loop] = !state[b.dataset.loop]; apply(); };
+  });
+  hardness.oninput = apply;
+
+  const musicBtn = document.getElementById('music');
+  let musicOn = false;
+  musicBtn.onclick = () => {
+    musicOn = !musicOn;
+    musicOn ? GameAudio.startMusic('surface') : GameAudio.stopMusic();
+    musicBtn.textContent = musicOn ? 'Musik stoppen' : 'Musik starten';
+  };
+  const depth = document.getElementById('depth');
+  depth.oninput = () => {
+    GameAudio.setDepth(Number(depth.value));
+    document.getElementById('depthVal').textContent = `${depth.value} ft`;
+  };
+
+  const muteBtn = document.getElementById('mute');
+  const showMute = () => (muteBtn.textContent = GameAudio.isMuted() ? 'Ton an' : 'Mute');
+  muteBtn.onclick = () => { GameAudio.toggleMute(); showMute(); };
+  showMute();
+
+  window.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+    if (e.code === 'Space') { state.drill = true; apply(); e.preventDefault(); }
+    if (e.code === 'ArrowUp') { state.thrust = true; apply(); e.preventDefault(); }
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') { state.drill = false; apply(); }
+    if (e.code === 'ArrowUp') { state.thrust = false; apply(); }
+  });
+</script>
+</body>
+</html>

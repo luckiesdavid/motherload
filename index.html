@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Motherload</title>
+<link rel="stylesheet" href="src/ui/ui.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  body { background: #0b0708; color: #f1e7dc; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
+  #game { position: fixed; inset: 0; }
+  #view { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+  #ui { position: absolute; inset: 0; }
+  #mute {
+    position: absolute; z-index: 30; top: 50%; left: calc(10px + env(safe-area-inset-left, 0px));
+    width: 36px; height: 30px; border-radius: 6px; border: 1px solid #5a4638; background: rgba(20, 14, 12, 0.8);
+    color: #f1e7dc; font-size: 16px; cursor: pointer;
+  }
+  #mute:focus-visible { outline: 2px solid #7fd3ff; }
+  .touchpad {
+    position: absolute; z-index: 20; left: 0; right: 0; bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    display: flex; justify-content: space-between; pointer-events: none;
+    padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px));
+  }
+  .touchpad[hidden] { display: none; }
+  .tp-group { display: flex; gap: 10px; pointer-events: auto; }
+  .touchpad button {
+    width: 64px; height: 64px; border-radius: 14px; border: 2px solid rgba(255, 190, 90, 0.55);
+    background: rgba(30, 18, 12, 0.55); color: #ffcf7a; font-size: 24px; touch-action: none;
+  }
+  .touchpad button.on { background: rgba(255, 170, 60, 0.45); color: #1a0f05; }
+</style>
+</head>
+<body>
+<div id="game">
+  <canvas id="view"></canvas>
+  <div id="ui"></div>
+  <button id="mute" type="button">🔊</button>
+</div>
+<script src="assets/graphics/sprites.js"></script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
