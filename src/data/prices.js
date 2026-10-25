@@ -17,12 +17,13 @@ export const start = {
   // Die Kapsel startet trotzdem mit vollem Micro Tank, die Nachricht ist der Hinweis zur Tankstelle.
 };
 
-// Oberflächengebäude des Originals (von links nach rechts).
+// Oberflächengebäude des Originals. Reihenfolge ist eine ANNAHME.
 export const buildings = [
   { id: 'fuel',       name: 'Fuel Station' },
   { id: 'processing', name: 'Mineral Processing' },
   { id: 'junk',       name: 'Junk Shop' },        // Upgrades
   { id: 'repair',     name: 'Repair Shop' },      // Reparatur und Items
+  { id: 'save',       name: 'Save Station' },     // Spielstand speichern (Flash-Version)
 ];
 
 export default { prices, fuelButtons, repairButtons, start, buildings };
