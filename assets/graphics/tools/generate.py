@@ -713,6 +713,127 @@ def make_sky():
     save(img, "backgrounds", "bg_sky", note="Oberflaechen-Himmel, 640x480")
 
 
+# ---------------------------------------------------------------- Endkampf
+
+BOSS = 96
+
+
+def natas_frame(f):
+    """Mr. Natas in seiner Kampfmaschine, schaut nach links."""
+    img = Image.new("RGBA", (BOSS, BOSS), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    oy = 2 * f  # Schweben
+    steel, steel_h, steel_d = rgb("#5a6270"), rgb("#8c96a6"), rgb("#2c313a")
+    # Duesenflammen unten
+    for jx in (30, 62):
+        ln = 10 + 4 * f
+        d.polygon([(jx - 6, 78 + oy), (jx + 6, 78 + oy), (jx, 78 + oy + ln)], fill=rgb("#ff9a1f"))
+        d.polygon([(jx - 3, 78 + oy), (jx + 3, 78 + oy), (jx, 78 + oy + ln - 5)], fill=rgb("#fff6b0"))
+        d.rectangle([jx - 7, 72 + oy, jx + 7, 79 + oy], fill=steel_d, outline=OUT)
+    # Rumpf
+    d.polygon([(14, 40 + oy), (24, 26 + oy), (74, 26 + oy), (86, 40 + oy), (82, 74 + oy), (18, 74 + oy)],
+              fill=steel, outline=OUT)
+    d.line([(25, 28 + oy), (73, 28 + oy)], fill=steel_h)
+    d.line([(16, 41 + oy), (24, 29 + oy)], fill=steel_h)
+    for y in (52, 64):
+        d.line([(18, y + oy), (82, y + oy)], fill=steel_d)
+    for x in (24, 40, 56, 72):
+        for y in (46, 58, 69):
+            d.point((x, y + oy), fill=steel_h)
+    # Kanzel mit Mr. Natas (Anzug, Glatze, Brille)
+    d.chord([28, 4 + oy, 70, 46 + oy], start=180, end=360, fill=rgb("#4a8aa8"), outline=OUT)
+    d.ellipse([42, 10 + oy, 54, 22 + oy], fill=rgb("#e0b090"), outline=OUT)
+    d.rectangle([43, 15 + oy, 48, 17 + oy], fill=OUT)  # Brille (nach links)
+    d.point((43, 20 + oy), fill=rgb("#8a3a2a"))
+    d.polygon([(40, 25 + oy), (56, 25 + oy), (58, 26 + oy), (38, 26 + oy)], fill=rgb("#20202a"))
+    d.rectangle([40, 22 + oy, 56, 25 + oy], fill=rgb("#20202a"))
+    d.polygon([(47, 22 + oy), (49, 22 + oy), (48, 25 + oy)], fill=rgb("#c4182e"))  # Krawatte
+    d.line([(33, 12 + oy), (38, 8 + oy)], fill=rgb("#d0f0ff"))
+    # Kanone nach links
+    d.rectangle([2, 44 + oy, 18, 52 + oy], fill=steel_d, outline=OUT)
+    d.rectangle([0, 46 + oy, 3, 50 + oy], fill=rgb("#1a1a1a"), outline=OUT)
+    d.line([(4, 45 + oy), (17, 45 + oy)], fill=steel_h)
+    # Warnlichter
+    for x, c in ((26, "#ff3030"), (74, "#ffe14a")):
+        d.ellipse([x - 2, 32 + oy, x + 2, 36 + oy], fill=rgb(c) if f == 0 else shade(rgb(c), 0.5), outline=OUT)
+    # Logo-Schriftzug
+    text(d, 36, 58 + oy, "NATAS", rgb("#ffe14a"))
+    return img
+
+
+def satan_frame(f):
+    """Gehoernte Teufelsgestalt mit Fluegeln, schaut nach links."""
+    img = Image.new("RGBA", (BOSS, BOSS), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    oy = 2 * f
+    red, red_h, red_d = rgb("#b81818"), rgb("#e84a3a"), rgb("#5e0a0a")
+    wing, wing_d = rgb("#3a0a14"), rgb("#200408")
+    # Fluegel (hinten, rechts), Frame 0 oben, Frame 1 unten
+    tip = 4 if f == 0 else 30
+    d.polygon([(52, 34 + oy), (94, tip + oy), (90, 40 + oy), (94, 52 + oy), (80, 50 + oy), (84, 64 + oy),
+               (56, 52 + oy)], fill=wing, outline=OUT)
+    d.line([(54, 38 + oy), (94, tip + oy)], fill=wing_d)
+    d.line([(56, 44 + oy), (90, 40 + oy)], fill=wing_d)
+    d.polygon([(30, 34 + oy), (8, tip + 10 + oy), (14, 44 + oy), (6, 54 + oy), (34, 50 + oy)], fill=wing_d,
+              outline=OUT)
+    # Schwanz
+    d.line([(58, 76 + oy), (78, 82 + oy), (88, 74 + oy)], fill=red_d, width=3)
+    d.polygon([(86, 70 + oy), (94, 72 + oy), (88, 78 + oy)], fill=red_d, outline=OUT)
+    # Beine
+    d.rectangle([34, 70 + oy, 42, 88 + oy], fill=red_d, outline=OUT)
+    d.rectangle([50, 70 + oy, 58, 88 + oy], fill=red_d, outline=OUT)
+    d.polygon([(30, 88 + oy), (42, 88 + oy), (42, 92 + oy), (28, 92 + oy)], fill=OUT)
+    d.polygon([(46, 88 + oy), (58, 88 + oy), (58, 92 + oy), (44, 92 + oy)], fill=OUT)
+    # Koerper
+    d.polygon([(28, 40 + oy), (64, 40 + oy), (60, 72 + oy), (32, 72 + oy)], fill=red, outline=OUT)
+    d.line([(46, 46 + oy), (46, 66 + oy)], fill=red_d)
+    d.line([(36, 52 + oy), (56, 52 + oy)], fill=red_d)
+    d.line([(30, 42 + oy), (34, 70 + oy)], fill=red_h)
+    # Arm mit Feuerball-Hand nach links
+    d.polygon([(30, 44 + oy), (14, 54 + oy), (12, 60 + oy), (18, 60 + oy), (32, 52 + oy)], fill=red, outline=OUT)
+    d.ellipse([6, 54 + oy, 16, 64 + oy], fill=rgb("#ff9a1f") if f == 0 else rgb("#ffe14a"))
+    d.ellipse([9, 57 + oy, 13, 61 + oy], fill=rgb("#fff6b0"))
+    # Kopf
+    d.ellipse([30, 16 + oy, 58, 44 + oy], fill=red, outline=OUT)
+    d.polygon([(30, 34 + oy), (24, 36 + oy), (32, 40 + oy)], fill=red, outline=OUT)  # Kinn/Bart nach links
+    d.polygon([(26, 36 + oy), (34, 42 + oy), (28, 48 + oy)], fill=OUT)  # Spitzbart
+    # Hoerner
+    d.polygon([(34, 22 + oy), (26, 4 + oy), (40, 18 + oy)], fill=rgb("#e8dfc8"), outline=OUT)
+    d.polygon([(50, 18 + oy), (60, 2 + oy), (56, 22 + oy)], fill=rgb("#e8dfc8"), outline=OUT)
+    # Augen (gluehend) und Grinsen, Blick nach links
+    eye = rgb("#ffe14a") if f == 0 else rgb("#fff6b0")
+    d.polygon([(33, 26 + oy), (40, 28 + oy), (34, 30 + oy)], fill=eye, outline=OUT)
+    d.polygon([(44, 26 + oy), (51, 28 + oy), (45, 30 + oy)], fill=eye, outline=OUT)
+    d.line([(32, 36 + oy), (46, 37 + oy)], fill=OUT)
+    for x in (35, 39, 43):
+        d.point((x, 37 + oy), fill=(255, 255, 255, 255))
+    d.line([(34, 20 + oy), (42, 18 + oy)], fill=red_h)
+    return img
+
+
+def make_bosses():
+    save(strip([natas_frame(f) for f in range(2)]), "bosses", "boss_natas", frames=2,
+         note="Mr. Natas in Kampfmaschine; schaut nach links, Schwebe-Animation")
+    save(strip([satan_frame(f) for f in range(2)]), "bosses", "boss_satan", frames=2,
+         note="Teufelsgestalt (zweite Phase); schaut nach links, Schwebe-Animation")
+    frames = []
+    for f in range(4):
+        img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        # Feuerball fliegt nach links, Schweif nach rechts
+        r = random.Random(1700 + f)
+        for i in range(4):
+            x = 8 + i * 2 + r.randint(0, 1)
+            y = 8 + r.randint(-2, 2)
+            d.point((x, y), fill=rgb(["#ff9a1f", "#e8471a", "#9e1f0f", "#5e0a0a"][i]))
+        d.ellipse([2, 4, 10, 12], fill=rgb("#e8471a"))
+        d.ellipse([2 + (f % 2), 5, 9, 11], fill=rgb("#ff9a1f"))
+        d.ellipse([3, 6, 7, 10], fill=rgb("#ffe14a"))
+        img.putpixel((4, 7), rgb("#fff6b0"))
+        frames.append(img)
+    save(strip(frames), "fx", "fx_fireball", frames=4, note="16x16, fliegt nach links (fuer rechts spiegeln)")
+
+
 SPRITES_JS = """// AUTOMATISCH ERZEUGT von assets/graphics/tools/generate.py - nicht von Hand aendern.
 // Funktioniert ohne Server (auch per file://), da das Manifest eingebettet ist.
 (function (global) {
@@ -770,6 +891,7 @@ def main():
     make_fx()
     make_buildings()
     make_sky()
+    make_bosses()
     with open(os.path.join(ROOT, "sprites.json"), "w") as f:
         json.dump({"tileSize": T, "sprites": MANIFEST}, f, indent=2, sort_keys=True)
     with open(os.path.join(ROOT, "sprites.js"), "w") as f:

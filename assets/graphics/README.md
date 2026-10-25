@@ -58,6 +58,9 @@ Eigene, originalnahe Pixel-Art für den Motherload-Nachbau. Es sind **keine Orig
 | `fx_explosion` | 32x32 | 6 | Explosion (Gas, Dynamit, Pod-Zerstörung) |
 | `fx_dust` | 32x32 | 4 | Bohrstaub |
 | `fx_gas` | 32x32 | 4 | Gaswolke |
+| `fx_fireball` | 16x16 | 4 | Feuerball der Bosse, fliegt nach links |
+| `boss_natas` | 96x96 | 2 | Mr. Natas in seiner Kampfmaschine, schaut nach links |
+| `boss_satan` | 96x96 | 2 | Teufelsgestalt (zweite Phase), schaut nach links |
 | `building_fuel` | 128x96 | 1 | Tankstelle |
 | `building_mineral` | 128x96 | 1 | Erzverkauf |
 | `building_upgrade` | 128x96 | 1 | Upgrade-Shop |

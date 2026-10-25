@@ -23,7 +23,7 @@
 <script src="sprites.js"></script>
 <script>
   var M = MotherloadSprites, SCALE = 3, anims = [];
-  var groups = { tile: "Tiles", pod: "Pod", fx: "Effekte", icon: "Icons", building: "Gebaeude", bg: "Hintergrund" };
+  var groups = { tile: "Tiles", pod: "Pod", fx: "Effekte", icon: "Icons", building: "Gebaeude", boss: "Endkampf", bg: "Hintergrund" };
   M.loadSprites("").then(function () {
     var root = document.getElementById("groups");
     Object.keys(groups).forEach(function (prefix) {
