@@ -17,7 +17,7 @@
 </head>
 <body>
 <h1>Motherload Audio-Test</h1>
-<p>Alle Klänge sind prozedural erzeugt. Halten: Leertaste = Bohren, Pfeil hoch = Triebwerk, M = Mute.</p>
+<p>Alle Klänge sind prozedural erzeugt. Halten: Leertaste = Bohren, Pfeil hoch = Triebwerk.</p>
 
 <section id="sfx"></section>
 
@@ -30,7 +30,7 @@
 
 <section>
   <button id="music">Musik starten</button>
-  <label>Tiefe <input id="depth" type="range" min="0" max="1500" step="10" value="0"> <span id="depthVal">0 m</span></label>
+  <label>Tiefe <input id="depth" type="range" min="0" max="6000" step="50" value="0"> <span id="depthVal">0 ft</span></label>
   <button id="mute">Mute</button>
 </section>
 
@@ -68,7 +68,7 @@
   const depth = document.getElementById('depth');
   depth.oninput = () => {
     GameAudio.setDepth(Number(depth.value));
-    document.getElementById('depthVal').textContent = `${depth.value} m`;
+    document.getElementById('depthVal').textContent = `${depth.value} ft`;
   };
 
   const muteBtn = document.getElementById('mute');
@@ -80,7 +80,6 @@
     if (e.repeat) return;
     if (e.code === 'Space') { state.drill = true; apply(); e.preventDefault(); }
     if (e.code === 'ArrowUp') { state.thrust = true; apply(); e.preventDefault(); }
-    if (e.code === 'KeyM') { GameAudio.toggleMute(); showMute(); }
   });
   window.addEventListener('keyup', (e) => {
     if (e.code === 'Space') { state.drill = false; apply(); }
