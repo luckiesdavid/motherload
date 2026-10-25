@@ -1,5 +1,7 @@
 # Motherload
 
+**[▶ Jetzt spielen](https://luckiesdavid.github.io/motherload/)**
+
 Browser-Nachbau des Miniclip-Klassikers Motherload (XGen Studios, 2004) mit eigenen Grafiken und Sounds.
 Reines HTML5 Canvas + ES-Module, kein Build-Schritt.
 
