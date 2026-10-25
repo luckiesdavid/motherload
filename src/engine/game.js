@@ -86,8 +86,9 @@ export class Game {
     const p = this.p;
     return JSON.stringify({
       v: 1, seed: this.seed, run: this.run, map: encodeMap(this.world.map), state: this.state,
-      pod: { x: p.x, y: p.y, facing: p.facing }, seen: this.seen, guardian: this.guardian,
-      bossDone: this.bossDone, time: this.time,
+      // Mitten im Bohren zählt die Startposition, das Feld ist ja noch nicht weg.
+      pod: p.drill ? { x: p.drill.x0, y: p.drill.y0, facing: p.facing } : { x: p.x, y: p.y, facing: p.facing }, seen: this.seen, guardian: this.guardian,
+      bossDone: this.bossDone, time: this.time, savedAt: Date.now(),
     });
   }
 
@@ -107,17 +108,49 @@ export class Game {
     this.derive();
   }
 
+  // Warum gerade nicht gespeichert werden darf, oder null. Verhindert Spielstände,
+  // aus denen man nicht mehr herauskommt (leerer Tank, Wrack, Endkampf).
+  saveBlocker() {
+    const p = this.p, s = this.state;
+    if (p.dead) return 'Dein Pod ist zerstört.';
+    if (this.boss && !this.boss.dead) return 'Während des Endkampfs kann nicht gespeichert werden.';
+    if (s.fuel < 1) return 'Zu wenig Treibstoff zum Speichern.';
+    if (s.hull < 1) return 'Die Hülle ist zu stark beschädigt.';
+    return null;
+  }
+
+  // Liefert null bei Erfolg, sonst den Grund als Text.
   save() {
-    try { localStorage.setItem(SAVE_KEY, this.toSave()); return true; } catch { return false; }
+    const why = this.saveBlocker();
+    if (why) return why;
+    try {
+      localStorage.setItem(SAVE_KEY, this.toSave());
+      return null;
+    } catch {
+      return 'Der Browser blockiert den Speicher.';
+    }
+  }
+  static readSave() {
+    try { return JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch { return null; }
   }
   static hasSave() {
-    try { return !!localStorage.getItem(SAVE_KEY); } catch { return false; }
+    return !!Game.readSave();
+  }
+  // Kurzinfo für den Titelbildschirm.
+  static saveInfo() {
+    const d = Game.readSave();
+    if (!d || !d.state) return null;
+    const depth = Math.max(0, Math.round((d.pod.y + HH) / T * FT));
+    return { depth, money: d.state.money, savedAt: d.savedAt || null, time: d.time || 0 };
   }
   load() {
-    let raw = null;
-    try { raw = localStorage.getItem(SAVE_KEY); } catch { /* blockiert */ }
+    const raw = Game.readSave();
     if (!raw) return false;
-    try { this.fromSave(raw); return true; } catch { return false; }
+    try { this.fromSave(raw); } catch { return false; }
+    // Steht der Pod auf einem Gebäude, öffnet es sich erst nach dem Wegfahren wieder.
+    const b = BUILDINGS.find(b => this.p.x > b.c0 * T && this.p.x < (b.c0 + 4) * T);
+    this.lock = b && Math.abs(this.p.y + HH) < 1 ? b.id : null;
+    return true;
   }
 
   // ---------- Abgeleitete Werte für HUD ----------
