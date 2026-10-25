@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motherload UI-Demo</title>
+  <link rel="stylesheet" href="./ui.css">
+  <style>
+    html, body { margin: 0; height: 100%; background: #000; font-family: sans-serif; }
+    #game { position: relative; width: 100%; height: calc(100% - 44px); overflow: hidden;
+      background: linear-gradient(180deg, #e8a05a 0 18%, #6b3a1c 18% 100%); }
+    #dev { height: 44px; display: flex; gap: 6px; align-items: center; padding: 0 8px; background: #111; color: #ccc; font-size: 12px; overflow-x: auto; }
+    #dev button { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+  <div id="dev">
+    Demo:
+    <button data-b="fuel">Tankstelle</button>
+    <button data-b="mineral">Erzverkauf</button>
+    <button data-b="upgrade">Upgrades</button>
+    <button data-b="repair">Werkstatt</button>
+    <button data-b="save">Speicherstation</button>
+    <button id="ore">+ Erz</button>
+    <button id="dig">Tiefer graben</button>
+    <button id="hurt">Schaden</button>
+    <button id="money">+ $10.000</button>
+    <button id="msg">Funkspruch</button>
+    <button id="over">Game Over</button>
+  </div>
+  <script type="module">
+    import { createUI, transactions as tx } from './index.js';
+    import * as data from '../data/index.js';
+
+    // Speichern/Laden übernimmt im Spiel die Engine; hier reicht eine Kopie im Speicher.
+    let saved = null;
+    const ui = createUI(document.getElementById('game'), {
+      data,
+      hasSave: () => !!saved,
+      onAction: (type, payload) => {
+        console.log('[ui]', type, payload);
+        if (type === 'save') saved = structuredClone(ui.state);
+        if (type === 'load') ui.update(structuredClone(saved));
+      },
+    });
+    window.ui = ui;
+
+    const ores = data.minerals.map((m) => m.id);
+    let last = performance.now();
+    function loop(now) {
+      const s = ui.state;
+      if (s && !ui.isBlocking()) {
+        s.fuel = Math.max(0, s.fuel - (now - last) / 4000);
+        if (s.fuel <= 0) ui.showScreen('gameover', { reason: 'Dir ist der Treibstoff ausgegangen.' });
+      }
+      last = now;
+      ui.update(s, now);
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    document.getElementById('dev').addEventListener('click', (e) => {
+      const s = ui.state;
+      if (e.target.dataset.b) ui.openBuilding(e.target.dataset.b);
+      if (!s) return;
+      if (e.target.id === 'ore') tx.addMineral(s, data, ores[Math.floor(Math.random() * 6)]).ok || ui.toast('Laderaum voll!');
+      if (e.target.id === 'dig') s.depth += 250;
+      if (e.target.id === 'hurt') s.hull = Math.max(0, s.hull - 3);
+      if (e.target.id === 'money') s.money += 10000;
+      if (e.target.id === 'msg') ui.showMessage({ title: 'Mr. Natas', text: 'Dies ist ein Test-Funkspruch.' });
+      if (e.target.id === 'over') ui.showScreen('gameover');
+    });
+  </script>
+</body>
+</html>
