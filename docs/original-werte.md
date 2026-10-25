@@ -64,7 +64,7 @@ Nur in der späteren Goldium Edition gibt es geheime Baupläne (Fuel Integrator,
 - Treibstoff: **1 $ pro Liter**, Schnellwahl 5 / 10 / 25 / 50 $ / Volltanken.
 - Reparatur: **15 $ pro HP**, Schnellwahl 50 / 100 / 200 / 500 $ / Komplett.
 - Startgeld 20 $ (Goldium Edition 0 $), Tank 10 L, Hülle 10 HP.
-- Gebäude an der Oberfläche: Fuel Station, Mineral Processing, Junk Shop, Repair Shop.
+- Gebäude an der Oberfläche: Fuel Station, Mineral Processing, Junk Shop, Repair Shop, Save Station (Spielstand).
 
 ## Gefahren
 
