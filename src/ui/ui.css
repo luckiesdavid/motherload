@@ -1,0 +1,697 @@
+/* Motherload-UI: metallische Fenster, gelb-orange Schrift, wie das Flash-Original. */
+
+.ml-ui {
+  --ml-metal-1: #9aa0a6;
+  --ml-metal-2: #5b6168;
+  --ml-metal-3: #2d3136;
+  --ml-panel: #1b1d20;
+  --ml-panel-2: #26292d;
+  --ml-text: #f2e6c9;
+  --ml-accent: #ffb400;
+  --ml-accent-2: #ff7a00;
+  --ml-fuel: #f5a300;
+  --ml-hull: #d8332b;
+  --ml-cargo: #4fa3e0;
+  --ml-good: #6ad04a;
+  --ml-bad: #d8332b;
+  --ml-font: 'Trebuchet MS', 'Verdana', system-ui, sans-serif;
+
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: var(--ml-font);
+  color: var(--ml-text);
+  font-size: 14px;
+  user-select: none;
+  z-index: 10;
+}
+
+.ml-ui *,
+.ml-ui *::before,
+.ml-ui *::after {
+  box-sizing: border-box;
+}
+
+.ml-ui [hidden] {
+  display: none !important;
+}
+
+.ml-ui button {
+  font: inherit;
+  color: inherit;
+}
+
+/* --- HUD ----------------------------------------------------------------- */
+
+.ml-hud {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.ml-hud-left,
+.ml-hud-right,
+.ml-hud-center {
+  background: linear-gradient(180deg, rgba(60, 64, 70, 0.92), rgba(28, 30, 33, 0.92));
+  border: 2px solid var(--ml-metal-2);
+  border-top-color: var(--ml-metal-1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.ml-hud-left {
+  justify-self: start;
+  min-width: 240px;
+}
+
+.ml-hud-right {
+  justify-self: end;
+  min-width: 240px;
+  text-align: right;
+}
+
+.ml-depth,
+.ml-money {
+  font-weight: bold;
+  font-size: 18px;
+  color: var(--ml-accent);
+  text-shadow: 1px 1px 0 #000;
+  white-space: nowrap;
+}
+
+.ml-money {
+  margin-bottom: 4px;
+}
+
+.ml-gauge {
+  display: grid;
+  grid-template-columns: 84px 1fr auto;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  text-align: left;
+}
+
+.ml-gauge + .ml-gauge {
+  margin-top: 4px;
+}
+
+.ml-gauge-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ml-metal-1);
+}
+
+.ml-gauge-value {
+  font-variant-numeric: tabular-nums;
+  min-width: 78px;
+  text-align: right;
+}
+
+.ml-bar {
+  height: 10px;
+  background: #0c0d0e;
+  border: 1px solid #000;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.ml-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(180deg, #ffd56a, var(--ml-fuel));
+  transition: width 0.15s linear;
+}
+
+.ml-gauge-hull .ml-bar i,
+.ml-bar-hull i {
+  background: linear-gradient(180deg, #ff8a7a, var(--ml-hull));
+}
+
+.ml-gauge-cargo .ml-bar i {
+  background: linear-gradient(180deg, #a6d8ff, var(--ml-cargo));
+}
+
+.ml-gauge.ml-low .ml-bar i {
+  animation: ml-blink 0.6s steps(2, start) infinite;
+}
+
+.ml-gauge.ml-full .ml-gauge-value {
+  color: var(--ml-bad);
+  font-weight: bold;
+}
+
+.ml-warning {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--ml-bad);
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  text-shadow: 1px 1px 0 #000, 0 0 8px rgba(255, 0, 0, 0.6);
+  animation: ml-blink 0.8s steps(2, start) infinite;
+}
+
+@keyframes ml-blink {
+  to {
+    opacity: 0.25;
+  }
+}
+
+/* --- Schnellleiste ------------------------------------------------------- */
+
+.ml-quickbar {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.ml-quick {
+  position: relative;
+  width: 58px;
+  height: 52px;
+  padding: 4px 2px 2px;
+  background: linear-gradient(180deg, #4a4f55, #23262a);
+  border: 2px solid var(--ml-metal-2);
+  border-top-color: var(--ml-metal-1);
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.ml-quick span {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ml-quick b {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  color: var(--ml-accent);
+  font-size: 12px;
+}
+
+.ml-quick.ml-empty {
+  opacity: 0.45;
+}
+
+.ml-ui kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 4px;
+  border: 1px solid var(--ml-metal-1);
+  border-radius: 3px;
+  background: var(--ml-metal-3);
+  color: var(--ml-accent);
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* --- Toast --------------------------------------------------------------- */
+
+.ml-toast {
+  position: absolute;
+  bottom: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid var(--ml-accent);
+  border-radius: 4px;
+  padding: 6px 14px;
+  color: var(--ml-accent);
+  font-weight: bold;
+  z-index: 45;
+  white-space: nowrap;
+}
+
+/* --- Ebenen und Fenster -------------------------------------------------- */
+
+.ml-layer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  padding: 16px;
+}
+
+.ml-menu-layer {
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 20;
+}
+
+.ml-message-layer {
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 38;
+}
+
+.ml-screen-layer {
+  background: radial-gradient(ellipse at center, rgba(70, 25, 10, 0.92), rgba(10, 4, 2, 0.97));
+  z-index: 25;
+}
+
+.ml-window {
+  width: min(640px, 100%);
+  max-height: calc(100% - 16px);
+  display: flex;
+  flex-direction: column;
+  background: var(--ml-panel);
+  border: 3px solid var(--ml-metal-2);
+  border-top-color: var(--ml-metal-1);
+  border-bottom-color: var(--ml-metal-3);
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px #000, 0 10px 30px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.ml-window header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, var(--ml-metal-1), var(--ml-metal-2));
+  border-bottom: 2px solid #000;
+}
+
+.ml-window h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #1a1a1a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ml-close {
+  border: none;
+  background: none;
+  font-size: 22px !important;
+  line-height: 1;
+  cursor: pointer;
+  color: #1a1a1a !important;
+}
+
+.ml-body {
+  padding: 14px;
+  overflow: auto;
+}
+
+.ml-window footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  background: var(--ml-panel-2);
+  border-top: 1px solid #000;
+}
+
+.ml-cash {
+  margin-right: auto;
+  color: var(--ml-accent);
+  font-weight: bold;
+}
+
+.ml-btn {
+  padding: 7px 14px;
+  border: 2px solid var(--ml-metal-2);
+  border-top-color: var(--ml-metal-1);
+  border-bottom-color: #111;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #555b62, #30343a);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.ml-btn:hover:not(:disabled) {
+  filter: brightness(1.2);
+}
+
+.ml-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.ml-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ml-btn.ml-primary {
+  background: linear-gradient(180deg, var(--ml-accent), var(--ml-accent-2));
+  color: #1a1000 !important;
+  border-color: #b36000;
+  border-top-color: #ffd36b;
+}
+
+.ml-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ml-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(260px, 100%);
+  margin: 20px auto 0;
+}
+
+.ml-tank p {
+  margin: 8px 0 0;
+}
+
+.ml-bar-big {
+  height: 22px;
+}
+
+/* --- Mineralverarbeitung ------------------------------------------------- */
+
+.ml-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ml-table th,
+.ml-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid #333;
+  text-align: left;
+}
+
+.ml-table th {
+  color: var(--ml-metal-1);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.ml-table tfoot td {
+  font-weight: bold;
+  color: var(--ml-accent);
+  border-bottom: none;
+}
+
+.ml-num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.ml-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  border: 1px solid #000;
+  border-radius: 2px;
+  vertical-align: -1px;
+}
+
+.ml-empty-note {
+  text-align: center;
+  color: var(--ml-metal-1);
+  margin: 24px 0;
+}
+
+/* --- Upgrades ------------------------------------------------------------ */
+
+.ml-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.ml-tab {
+  padding: 6px 10px;
+  border: 1px solid var(--ml-metal-2);
+  border-radius: 4px 4px 0 0;
+  background: var(--ml-panel-2);
+  cursor: pointer;
+}
+
+.ml-tab.ml-active {
+  background: var(--ml-accent);
+  color: #1a1000 !important;
+  font-weight: bold;
+}
+
+.ml-upgrades {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.ml-upgrade {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px;
+  text-align: left;
+  border: 2px solid var(--ml-metal-3);
+  border-radius: 6px;
+  background: var(--ml-panel-2);
+  cursor: pointer;
+}
+
+.ml-upgrade .ml-tier {
+  font-size: 11px;
+  color: var(--ml-metal-1);
+}
+
+.ml-upgrade em {
+  font-style: normal;
+  font-weight: bold;
+  color: var(--ml-accent);
+}
+
+.ml-upgrade.ml-owned {
+  border-color: var(--ml-good);
+  cursor: default;
+}
+
+.ml-upgrade.ml-owned em {
+  color: var(--ml-good);
+}
+
+.ml-upgrade.ml-lower {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ml-upgrade.ml-tooExpensive {
+  cursor: default;
+}
+
+.ml-upgrade.ml-tooExpensive em {
+  color: var(--ml-bad);
+}
+
+.ml-upgrade.ml-buyable:hover {
+  border-color: var(--ml-accent);
+}
+
+/* --- Items --------------------------------------------------------------- */
+
+.ml-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ml-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  background: var(--ml-panel-2);
+  border-radius: 6px;
+}
+
+.ml-item p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #c9bfa8;
+}
+
+.ml-count {
+  font-size: 12px;
+  color: var(--ml-metal-1);
+  white-space: nowrap;
+}
+
+/* --- Funkspruch ---------------------------------------------------------- */
+
+.ml-radio {
+  width: min(520px, 100%);
+}
+
+.ml-radio .ml-body {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.ml-portrait {
+  flex: 0 0 72px;
+  height: 72px;
+  border: 2px solid var(--ml-metal-2);
+  border-radius: 4px;
+  background:
+    radial-gradient(circle at 50% 38%, #d9b48f 0 18px, transparent 19px),
+    radial-gradient(ellipse at 50% 100%, #3a3f46 0 30px, transparent 31px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 4px),
+    #10261a;
+}
+
+.ml-radio-text {
+  margin: 0;
+  line-height: 1.5;
+  font-family: 'Courier New', monospace;
+  color: #b8ffb0;
+}
+
+/* --- Bildschirme --------------------------------------------------------- */
+
+.ml-screen {
+  text-align: center;
+  width: min(560px, 100%);
+}
+
+.ml-screen h1 {
+  margin: 0;
+  font-size: clamp(36px, 8vw, 64px);
+  letter-spacing: 0.08em;
+  color: var(--ml-accent);
+  text-shadow: 3px 3px 0 #5a2000, 0 0 20px rgba(255, 140, 0, 0.5);
+}
+
+.ml-sub {
+  color: #e8c9a0;
+  margin: 6px 0 0;
+}
+
+.ml-gameover h1 {
+  color: var(--ml-bad);
+  text-shadow: 3px 3px 0 #300, 0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+.ml-howto {
+  margin-top: 20px;
+  padding: 12px 16px;
+  text-align: left;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--ml-metal-2);
+  border-radius: 6px;
+}
+
+.ml-howto h3 {
+  margin: 0 0 8px;
+  color: var(--ml-accent);
+}
+
+.ml-howto ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  columns: 2;
+}
+
+.ml-howto li {
+  margin-bottom: 4px;
+}
+
+/* --- Werkstatt, Funk, Hinweise ------------------------------------------ */
+
+.ml-section {
+  margin: 0 0 8px;
+  color: var(--ml-accent);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ml-section:not(:first-child) {
+  margin-top: 18px;
+}
+
+.ml-reward {
+  margin: 8px 0 0;
+  color: var(--ml-accent);
+  font-weight: bold;
+}
+
+.ml-hint {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #c9a98a;
+}
+
+/* --- Schmale Bildschirme ------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .ml-hud {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ml-hud-center {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+  }
+
+  .ml-hud-left,
+  .ml-hud-right {
+    min-width: 0;
+  }
+
+  .ml-gauge {
+    grid-template-columns: 1fr;
+  }
+
+  .ml-gauge-value {
+    text-align: left;
+  }
+
+  .ml-item {
+    grid-template-columns: auto 1fr;
+  }
+
+  .ml-quick {
+    width: 44px;
+  }
+
+  .ml-quick span {
+    display: none;
+  }
+
+  .ml-howto ul {
+    columns: 1;
+  }
+}
