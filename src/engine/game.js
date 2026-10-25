@@ -132,7 +132,8 @@ export class Game {
     s.temperature = Math.round(20 + s.depth * 0.11);
     const inBoss = p.y > BOSS_TOP * T;
     s.depthGlitch = s.depth >= D.world.altimeterGlitchDepth && !inBoss;
-    s.depthDisplay = inBoss ? '-' + D.world.bossDisplayedDepth : s.depthGlitch ? '-' + glitch(s.depth, this.time) : (s.depth ? '-' + s.depth : '' + s.altitude);
+    const n = (v) => v.toLocaleString('de-DE');
+    s.depthDisplay = inBoss ? '-' + n(D.world.bossDisplayedDepth) : s.depthGlitch ? '-' + glitch(s.depth, this.time) : (s.depth ? '-' + n(s.depth) : n(s.altitude));
     s.boss = this.boss && !this.boss.dead ? { name: D.boss.phases[this.boss.phase].name, hp: this.boss.hp, hpMax: this.boss.hpMax } : null;
   }
 
